@@ -3,14 +3,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Admin_m extends CI_Model {
     public function get_all_users_with_roles() {
-        $this->db->select('u.*, r.nama_role, p.nama_prodi, f.nama_fakultas');
+        $this->db->select('u.*, r.nama_role, p.nama_prodi as dosen_prodi_name, p2.nama_prodi as kaprodi_prodi_name, f.nama_fakultas as dekan_fakultas_name, d.id_prodi as dosen_prodi_id, k.id_prodi as kaprodi_prodi_id, dk.id_fakultas as dekan_fakultas_id');
         $this->db->from('user u');
         $this->db->join('user_role ur', 'u.id_user = ur.id_user', 'left');
         $this->db->join('role r', 'ur.id_role = r.id_role', 'left');
         $this->db->join('dosen d', 'u.id_user = d.id_user', 'left');
         $this->db->join('prodi p', 'd.id_prodi = p.id_prodi', 'left');
         $this->db->join('kaprodi k', 'u.id_user = k.id_user', 'left');
-        $this->db->join('prodi p2', 'k.id_prodi = p2.id_prodi', 'left', 'p2.id_prodi = COALESCE(d.id_prodi, k.id_prodi)');
+        $this->db->join('prodi p2', 'k.id_prodi = p2.id_prodi', 'left');
         $this->db->join('dekan dk', 'u.id_user = dk.id_user', 'left');
         $this->db->join('fakultas f', 'dk.id_fakultas = f.id_fakultas', 'left');
         $this->db->group_by('u.id_user');
@@ -21,8 +21,36 @@ class Admin_m extends CI_Model {
             $roles = $this->get_user_roles($result['id_user']);
             $role_names = array_column($roles, 'nama_role');
             $result['roles'] = implode(', ', $role_names);
-            $result['nama_prodi'] = $result['nama_prodi'] ?? '-';
-            $result['nama_fakultas'] = $result['nama_fakultas'] ?? '-';
+
+            // Tentukan nama_prodi: hanya untuk dosen dan kaprodi
+            if (!empty($result['dosen_prodi_id'])) {
+                $prodi = $this->get_prodi_by_id($result['dosen_prodi_id']);
+                $result['nama_prodi'] = $prodi['nama_prodi'] ?? '-';
+            } elseif (!empty($result['kaprodi_prodi_id'])) {
+                $prodi = $this->get_prodi_by_id($result['kaprodi_prodi_id']);
+                $result['nama_prodi'] = $prodi['nama_prodi'] ?? '-';
+            } else {
+                $result['nama_prodi'] = '-'; // Kosong untuk dekan
+            }
+
+            // Tentukan nama_fakultas: hanya untuk dekan dan kaprodi
+            $result['nama_fakultas'] = '-'; // Default value
+            if (in_array('dekan', $role_names) && !empty($result['dekan_fakultas_id'])) {
+                $this->db->select('nama_fakultas');
+                $this->db->from('fakultas');
+                $this->db->where('id_fakultas', $result['dekan_fakultas_id']);
+                $query = $this->db->get();
+                $fakultas = $query->row_array();
+                $result['nama_fakultas'] = $fakultas['nama_fakultas'] ?? '-';
+            } elseif (in_array('kaprodi', $role_names) && !empty($result['kaprodi_prodi_id'])) {
+                $this->db->select('f.nama_fakultas');
+                $this->db->from('prodi p');
+                $this->db->join('fakultas f', 'p.id_fakultas = f.id_fakultas', 'left');
+                $this->db->where('p.id_prodi', $result['kaprodi_prodi_id']);
+                $query = $this->db->get();
+                $fakultas = $query->row_array();
+                $result['nama_fakultas'] = $fakultas['nama_fakultas'] ?? '-';
+            }
         }
 
         return $results;
@@ -33,14 +61,14 @@ class Admin_m extends CI_Model {
     }
 
     public function get_all_prodis() {
-        $this->db->select('*');
+        $this->db->select('id_prodi, nama_prodi, id_fakultas');
         $this->db->from('prodi');
         $query = $this->db->get();
         return $query->result_array();
     }
 
     public function get_all_fakultas() {
-        $this->db->select('*');
+        $this->db->select('id_fakultas, nama_fakultas');
         $this->db->from('fakultas');
         $query = $this->db->get();
         return $query->result_array();
@@ -59,22 +87,51 @@ class Admin_m extends CI_Model {
     }
 
     public function get_user_by_id_with_prodi_fakultas($id_user) {
-        $this->db->select('u.*, r.nama_role, p.nama_prodi, f.nama_fakultas, d.id_prodi, dk.id_fakultas');
+        $this->db->select('u.*, d.id_prodi as dosen_prodi_id, k.id_prodi as kaprodi_prodi_id, dk.id_fakultas as dekan_fakultas_id');
         $this->db->from('user u');
-        $this->db->join('user_role ur', 'u.id_user = ur.id_user', 'left');
-        $this->db->join('role r', 'ur.id_role = r.id_role', 'left');
         $this->db->join('dosen d', 'u.id_user = d.id_user', 'left');
-        $this->db->join('prodi p', 'd.id_prodi = p.id_prodi', 'left');
         $this->db->join('kaprodi k', 'u.id_user = k.id_user', 'left');
-        $this->db->join('prodi p2', 'k.id_prodi = p2.id_prodi', 'left', 'p2.id_prodi = COALESCE(d.id_prodi, k.id_prodi)');
         $this->db->join('dekan dk', 'u.id_user = dk.id_user', 'left');
-        $this->db->join('fakultas f', 'dk.id_fakultas = f.id_fakultas', 'left');
         $this->db->where('u.id_user', $id_user);
         $query = $this->db->get();
         $user = $query->row_array();
-        $user['roles'] = $this->get_user_roles($id_user);
-        $user['nama_prodi'] = $user['nama_prodi'] ?? '-';
-        $user['nama_fakultas'] = $user['nama_fakultas'] ?? '-';
+
+        if ($user) {
+            $user['roles'] = $this->get_user_roles($id_user);
+
+            // Tentukan id_prodi: hanya untuk dosen dan kaprodi
+            $user['id_prodi'] = $user['dosen_prodi_id'] ?: $user['kaprodi_prodi_id'];
+            $user['id_fakultas'] = $user['dekan_fakultas_id'];
+
+            // Ambil nama_prodi: hanya untuk dosen dan kaprodi
+            if ($user['id_prodi']) {
+                $prodi = $this->get_prodi_by_id($user['id_prodi']);
+                $user['nama_prodi'] = $prodi['nama_prodi'] ?? '-';
+            } else {
+                $user['nama_prodi'] = '-'; // Kosong untuk dekan
+            }
+
+            // Ambil nama_fakultas: hanya untuk dekan dan kaprodi
+            $role_names = array_column($user['roles'], 'nama_role');
+            $user['nama_fakultas'] = '-'; // Default value
+            if (in_array('dekan', $role_names) && $user['id_fakultas']) {
+                $this->db->select('nama_fakultas');
+                $this->db->from('fakultas');
+                $this->db->where('id_fakultas', $user['id_fakultas']);
+                $query = $this->db->get();
+                $fakultas = $query->row_array();
+                $user['nama_fakultas'] = $fakultas['nama_fakultas'] ?? '-';
+            } elseif (in_array('kaprodi', $role_names) && $user['id_prodi']) {
+                $this->db->select('f.nama_fakultas');
+                $this->db->from('prodi p');
+                $this->db->join('fakultas f', 'p.id_fakultas = f.id_fakultas', 'left');
+                $this->db->where('p.id_prodi', $user['id_prodi']);
+                $query = $this->db->get();
+                $fakultas = $query->row_array();
+                $user['nama_fakultas'] = $fakultas['nama_fakultas'] ?? '-';
+            }
+        }
+
         return $user;
     }
 

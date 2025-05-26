@@ -7,8 +7,9 @@
                 <h6 class="m-0 font-weight-bold text-primary">Daftar Klasifikasi Surat</h6>
             </div>
             <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered" width="100%" cellspacing="0">
+                <!-- Tambahkan style overflow agar tabel bisa scroll horizontal -->
+                <div class="table-responsive" style="overflow-x: auto;">
+                    <table class="table table-bordered" style="min-width: 600px;" cellspacing="0">
                         <thead>
                             <tr>
                                 <th>Kode Surat</th>

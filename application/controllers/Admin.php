@@ -169,6 +169,9 @@ class Admin extends CI_Controller {
         $data['fakultas'] = $this->admin_m->get_all_fakultas();
 
         if ($this->input->post()) {
+            // Debugging: Cek data yang diterima dari form
+            log_message('debug', 'Data POST: ' . print_r($this->input->post(), true));
+
             $data_user = [
                 'nama' => $this->input->post('nama'),
                 'username' => $this->input->post('username'),
@@ -178,18 +181,29 @@ class Admin extends CI_Controller {
                 'nik' => $this->input->post('nik')
             ];
             $user_id = $this->admin_m->add_user($data_user);
+
             $role_id = $this->input->post('role_id');
             $this->admin_m->add_role_to_user($user_id, $role_id);
 
-            $role_name = $this->input->post('role_name');
-            if ($role_name == 'dosen') {
-                $prodi_id = $this->input->post('prodi_id') ?: null;
+            // Ambil nama role dari database
+            $this->db->select('nama_role');
+            $this->db->from('role');
+            $this->db->where('id_role', $role_id);
+            $role = $this->db->get()->row_array();
+            $role_name = $role['nama_role'];
+
+            // Simpan Prodi dan Fakultas
+            $prodi_id = $this->input->post('prodi_id') ?: null;
+            $fakultas_id = $this->input->post('fakultas_id') ?: null;
+
+            // Debugging: Cek apakah fakultas_id diterima
+            log_message('debug', 'Role: ' . $role_name . ', Prodi ID: ' . $prodi_id . ', Fakultas ID: ' . $fakultas_id);
+
+            if ($role_name == 'dosen' && $prodi_id) {
                 $this->admin_m->assign_dosen($user_id, $prodi_id);
-            } elseif ($role_name == 'kaprodi') {
-                $prodi_id = $this->input->post('prodi_id') ?: null;
+            } elseif ($role_name == 'kaprodi' && $prodi_id) {
                 $this->admin_m->assign_kaprodi($user_id, $prodi_id);
-            } elseif (in_array($role_name, ['dekan', 'warek1', 'warek2'])) {
-                $fakultas_id = $this->input->post('fakultas_id') ?: null;
+            } elseif ($role_name == 'dekan' && $fakultas_id) {
                 $this->admin_m->assign_dekan($user_id, $fakultas_id);
             }
 
@@ -213,6 +227,9 @@ class Admin extends CI_Controller {
         $data['fakultas'] = $this->admin_m->get_all_fakultas();
 
         if ($this->input->post()) {
+            // Debugging: Cek data yang diterima dari form
+            log_message('debug', 'Data POST (Edit): ' . print_r($this->input->post(), true));
+
             $data_user = [
                 'nama' => $this->input->post('nama'),
                 'username' => $this->input->post('username'),
@@ -233,15 +250,25 @@ class Admin extends CI_Controller {
                 }
             }
 
-            $role_name = $this->input->post('role_name');
-            if ($role_name == 'dosen') {
-                $prodi_id = $this->input->post('prodi_id') ?: null;
+            // Ambil nama role dari database
+            $this->db->select('nama_role');
+            $this->db->from('role');
+            $this->db->where('id_role', $role_id);
+            $role = $this->db->get()->row_array();
+            $role_name = $role['nama_role'];
+
+            // Update Prodi dan Fakultas
+            $prodi_id = $this->input->post('prodi_id') ?: null;
+            $fakultas_id = $this->input->post('fakultas_id') ?: null;
+
+            // Debugging: Cek apakah fakultas_id diterima
+            log_message('debug', 'Role (Edit): ' . $role_name . ', Prodi ID: ' . $prodi_id . ', Fakultas ID: ' . $fakultas_id);
+
+            if ($role_name == 'dosen' && $prodi_id) {
                 $this->admin_m->assign_dosen($user_id, $prodi_id);
-            } elseif ($role_name == 'kaprodi') {
-                $prodi_id = $this->input->post('prodi_id') ?: null;
+            } elseif ($role_name == 'kaprodi' && $prodi_id) {
                 $this->admin_m->assign_kaprodi($user_id, $prodi_id);
-            } elseif (in_array($role_name, ['dekan', 'warek1', 'warek2'])) {
-                $fakultas_id = $this->input->post('fakultas_id') ?: null;
+            } elseif ($role_name == 'dekan' && $fakultas_id) {
                 $this->admin_m->assign_dekan($user_id, $fakultas_id);
             }
 
@@ -321,10 +348,11 @@ class Admin extends CI_Controller {
         redirect('admin/manage_klasifikasi_surat');
     }
 
-    public function add_role() {
+  public function add_role() {
         $data = [];
         $data['title'] = 'Tambah Role Baru';
         $data['user_name'] = $this->session->userdata('name');
+        $data['roles'] = $this->admin_m->get_all_roles(); // Mengambil semua roles untuk ditampilkan di view
 
         if ($this->input->post()) {
             $role_name = $this->input->post('nama_role');

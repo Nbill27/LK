@@ -5,27 +5,29 @@
             <div class="alert alert-success"><?php echo $this->session->flashdata('success'); ?></div>
         <?php endif; ?>
         <div class="card shadow mb-4">
-            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <div class="card-header py-3">
                 <h6 class="m-0 font-weight-bold text-primary">Daftar Pengguna</h6>
-                <a href="<?php echo site_url('admin/add_user'); ?>" class="btn btn-primary">Tambah Pengguna</a>
             </div>
             <div class="card-body">
+                <a href="<?php echo site_url('admin/add_user'); ?>" class="btn btn-primary mb-3">Tambah Pengguna</a>
                 <div class="table-responsive">
-                    <table class="table table-bordered" width="100%" cellspacing="0">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
+                                <th>No</th>
                                 <th>Nama</th>
                                 <th>Username</th>
                                 <th>Email</th>
                                 <th>Role</th>
-                                <th>Prodi</th> 
-                                <th>Fakultas</th> 
+                                <th>Prodi</th>
+                                <th>Fakultas</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($users as $user): ?>
+                            <?php $no = 1; foreach ($users as $user): ?>
                                 <tr>
+                                    <td><?php echo $no++; ?></td>
                                     <td><?php echo $user['nama']; ?></td>
                                     <td><?php echo $user['username']; ?></td>
                                     <td><?php echo $user['email']; ?></td>
@@ -33,8 +35,8 @@
                                     <td><?php echo $user['nama_prodi']; ?></td>
                                     <td><?php echo $user['nama_fakultas']; ?></td>
                                     <td>
-                                        <a href="<?php echo site_url('admin/edit_user/' . $user['id_user']); ?>" class="btn btn-warning btn-sm">Edit</a>
-                                        <a href="<?php echo site_url('admin/delete_user/' . $user['id_user']); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
+                                        <a href="<?php echo site_url('admin/edit_user/' . $user['id_user']); ?>" class="btn btn-sm btn-warning">Edit</a>
+                                        <a href="<?php echo site_url('admin/delete_user/' . $user['id_user']); ?>" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus pengguna ini?')">Hapus</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
