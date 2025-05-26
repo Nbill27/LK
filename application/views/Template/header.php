@@ -1,116 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title><?php echo isset($title) ? $title : 'Dashboard'; ?> - Sistem LK</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            padding-top: 70px;
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f8f9fa;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            transition: margin-left 0.3s ease;
-        }
-        .navbar {
-            background-color: #28a745;
-            height: 70px;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1030;
-            padding: 0 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .navbar-brand {
-            color: white;
-            font-weight: 600;
-            font-size: 1.4rem;
-        }
-        .navbar-brand:hover { color: #e0f7fa; }
-        .hamburger { font-size: 1.5rem; margin-right: 15px; color: white; cursor: pointer; }
-        .content {
-            margin-left: 250px;
-            padding: 25px;
-            flex: 1;
-            transition: margin-left 0.3s ease;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .content.expanded {
-            margin-left: 60px;
-        }
-        @media (max-width: 767px) {
-            .content {
-                margin-left: 0;
-            }
-            .content.expanded {
-                margin-left: 0;
-            }
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>SISLEMDA - Dashboard</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+        <link href="<?php echo base_url('assets/template/css/styles.css" rel="stylesheet')?>" />
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <style>
             body {
-                padding-top: 60px;
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
             }
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-list hamburger" id="sidebarToggle"></i>
-                <a class="navbar-brand" href="<?php echo site_url('dashboard'); ?>">Sistem LK</a>
-            </div>
-            <div class="d-flex align-items-center gap-3">
-                <a href="<?php echo site_url('notifications'); ?>" class="text-white position-relative">
-                    <i class="bi bi-bell fs-5"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"><?php echo $notifications ?? 0; ?></span>
-                </a>
-                <div class="dropdown">
-                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="avatarDropdown" data-bs-toggle="dropdown">
-                        <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($this->session->userdata('nama')); ?>&background=28a745&color=fff&rounded=true" alt="avatar" width="32" height="32" class="rounded-circle">
-                        <span class="ms-2 d-none d-md-inline"><?php echo isset($user_name) ? htmlspecialchars($user_name) : ($this->session->userdata('nama') ?: 'Pengguna'); ?></span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#">Profil</a></li>
-                        <li><a class="dropdown-item" href="<?php echo site_url('auth/logout'); ?>">Logout</a></li>
-                    </ul>
+
+            #layoutSidenav {
+                display: flex;
+                flex-direction: row; /* Changed back to row to place sidebar and content side-by-side */
+                flex-grow: 1;
+            }
+
+            #layoutSidenav_nav {
+                /* Sidebar styles remain the same */
+            }
+
+            #layoutSidenav_content {
+                flex-grow: 1;
+                display: flex; /* Add flex display to the content area */
+                flex-direction: column; /* Arrange main and footer vertically */
+            }
+
+            main {
+                flex-grow: 1; /* Allow main content to take up available vertical space */
+            }
+
+            #layoutSidenav_nav .sb-sidenav a,
+            #layoutSidenav_nav .sb-sidenav .sb-sidenav-menu-heading,
+            #layoutSidenav_nav .sb-sidenav .nav-link .sb-nav-link-icon i {
+                color: white !important;
+            }
+
+            #layoutSidenav_nav .sb-sidenav .sb-sidenav-footer {
+                color: white !important;
+                background-color: rgba(0, 0, 0, 0.2);
+            }
+
+            footer.mt-auto {
+                /* Remove margin-top: auto here */
+            }
+        </style>
+    </head>
+<body class="sb-nav-fixed">
+    <nav class="sb-topnav navbar navbar-expand navbar-light bg-white border-bottom border-3 border-success">
+        <img src="<?php echo base_url('assets/template/img/logo_binainsani.png') ?>" alt="Logo" style="width: 220px; height: 40px; object-fit: contain;"/>
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+
+        <ul class="navbar-nav ms-auto me-3 my-2 my-md-0 d-flex align-items-center gap-3">
+            <!-- Notifikasi -->
+            <li class="nav-item">
+                <div class="bg-success rounded-3 d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                    <i class="fas fa-bell text-white"></i>
                 </div>
-            </div>
-        </div>
+            </li>
+
+            <!-- Admin dropdown -->
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="<?php echo base_url('assets/template/img/gambarorg.jpg') ?>" class="rounded-3" width="40" height="40" alt="Admin">
+                    <span class="fw-semibold text-dark"><?php echo $this->session->userdata('name'); ?></span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#!">Settings</a></li>
+                    <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li><a class="dropdown-item text-danger" href="<?php echo site_url('auth/logout'); ?>">Logout</a></li>
+                </ul>
+            </li>
+        </ul>
     </nav>
-
-    <div class="content" id="content">
-        <?php if (isset($content_view)) $this->load->view($content_view); ?>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const sidebar = document.getElementById('sidebar');
-            const content = document.getElementById('content');
-            const sidebarToggle = document.getElementById('sidebarToggle');
-
-            if (sidebarToggle && sidebar && content) {
-                const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-                if (isCollapsed) {
-                    sidebar.classList.add('collapsed');
-                    content.classList.add('expanded');
-                    document.body.classList.add('sidebar-collapsed');
-                }
-
-                sidebarToggle.addEventListener('click', () => {
-                    sidebar.classList.toggle('collapsed');
-                    content.classList.toggle('expanded');
-                    document.body.classList.toggle('sidebar-collapsed');
-                    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
-                });
-            }
-        });
-    </script>
-</body>
-</html>
+<div id="layoutSidenav">

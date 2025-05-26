@@ -54,3 +54,5 @@ $route['dashboard'] = 'dashboard/index';
 $route['auth/login'] = 'auth/login';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+$route['user'] = 'user';
+$route['admin'] = 'admin';

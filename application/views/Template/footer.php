@@ -1,56 +1,27 @@
-<footer class="footer py-3">
-    <div class="container-fluid text-center">
-        <span class="footer-text">© 2025 Sistem LK. All Rights Reserved.</span>
-        <div class="mt-2">
-            <a href="#" class="footer-link mx-2">Privacy Policy</a> | 
-            <a href="#" class="footer-link mx-2">Terms of Service</a> | 
-            <a href="#" class="footer-link mx-2">Contact Us</a>
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <?php if ($this->session->flashdata('success')): ?>
+                <div class="alert alert-success"><?php echo $this->session->flashdata('success'); ?></div>
+            <?php endif; ?>
+            <?php if ($this->session->flashdata('error')): ?>
+                <div class="alert alert-danger"><?php echo $this->session->flashdata('error'); ?></div>
+            <?php endif; ?>
+            <?php if (isset($content_view)): ?>
+                <?php $this->load->view($content_view, isset($data) ? $data : []); ?>
+            <?php endif; ?>
         </div>
-    </div>
-</footer>
-
-<style>
-    .footer {
-        width: 100%;
-        background-color: #ffffff;
-        color: #28A745;
-        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-        z-index: 1000;
-        transition: margin-left 0.3s ease;
-    }
-
-    body:not(.sidebar-collapsed) .footer {
-        margin-left: 250px;
-    }
-
-    body.sidebar-collapsed .footer {
-        margin-left: 60px;
-    }
-
-    .footer .footer-text {
-        color: #28A745;
-        font-size: 0.95rem;
-        font-weight: 500;
-    }
-
-    .footer .footer-link {
-        color: #4CAF50 !important;
-        text-decoration: none;
-        font-size: 0.9rem;
-        transition: color 0.3s;
-    }
-
-    .footer .footer-link:hover {
-        color: #2E7D32 !important;
-    }
-
-    @media (max-width: 767px) {
-        body:not(.sidebar-collapsed) .footer,
-        body.sidebar-collapsed .footer {
-            margin-left: 0 !important;
-        }
-        .footer .footer-link {
-            font-size: 0.85rem;
-        }
-    }
-</style>
+    </main>
+    <footer class="py-4 bg-dark mt-auto">
+        <div class="container-fluid px-4">
+            <div class="d-flex align-items-center justify-content-center small">
+                <div class="text-white">© 2025 SISLEMDA, All Rights Reserved</div>
+            </div>
+        </div>
+    </footer>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="<?php echo base_url('assets/template/js/scripts.js'); ?>"></script>
+</body>
+</html>
