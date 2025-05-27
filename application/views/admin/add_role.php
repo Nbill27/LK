@@ -33,6 +33,14 @@
             </div>
         </div>
 
+        <!-- Search Bar -->
+        <form method="get" action="<?php echo site_url('admin/add_role'); ?>" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Cari berdasarkan nama role..." value="<?php echo isset($search) ? $search : ''; ?>">
+                <button type="submit" class="btn btn-primary">Cari</button>
+            </div>
+        </form>
+
         <!-- Tabel daftar role -->
         <div class="card-body">
             <div class="table-responsive">
@@ -55,12 +63,41 @@
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <tr><td colspan="2">Tidak ada data Role.</td></tr>
+                            <tr><td colspan="2" class="text-center">Tidak ada data Role.</td></tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
             </div>
         </div>
 
+        <!-- Pagination -->
+        <div class="pagination-links">
+            <?php echo $pagination; ?>
+        </div>
     </div>
 </div>
+
+<style>
+.pagination-links {
+    margin-top: 20px;
+}
+.pagination li {
+    display: inline-block;
+    margin-right: 5px;
+}
+.pagination li.active a {
+    background-color: #00923F;
+    border-color: #00923F;
+    color: white;
+}
+.pagination li a {
+    color: #00923F;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+}
+.pagination li a:hover {
+    background-color: #f1f1f1;
+}
+</style>

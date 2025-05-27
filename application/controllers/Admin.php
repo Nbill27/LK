@@ -92,60 +92,60 @@ class Admin extends CI_Controller {
     }
 
     public function manage_role_user() {
-    $this->load->library('pagination');
+        $this->load->library('pagination');
 
-    // Konfigurasi pagination
-    $config['base_url'] = site_url('admin/manage_role_user');
-    $config['total_rows'] = $this->admin_m->count_all_users_with_roles(); // Total data user
-    $config['per_page'] = 10; // Jumlah data per halaman
-    $config['uri_segment'] = 3; // Segment URL untuk nomor halaman
-    $config['full_tag_open'] = '<ul class="pagination">';
-    $config['full_tag_close'] = '</ul>';
-    $config['first_link'] = 'Pertama';
-    $config['last_link'] = 'Terakhir';
-    $config['next_link'] = 'Selanjutnya';
-    $config['prev_link'] = 'Sebelumnya';
-    $config['first_tag_open'] = '<li class="page-item">';
-    $config['first_tag_close'] = '</li>';
-    $config['last_tag_open'] = '<li class="page-item">';
-    $config['last_tag_close'] = '</li>';
-    $config['next_tag_open'] = '<li class="page-item">';
-    $config['next_tag_close'] = '</li>';
-    $config['prev_tag_open'] = '<li class="page-item">';
-    $config['prev_tag_close'] = '</li>';
-    $config['cur_tag_open'] = '<li class="page-item active"><a class="page-link" href="#">';
-    $config['cur_tag_close'] = '</a></li>';
-    $config['num_tag_open'] = '<li class="page-item">';
-    $config['num_tag_close'] = '</li>';
-    $config['attributes'] = array('class' => 'page-link');
+        // Konfigurasi pagination
+        $config['base_url'] = site_url('admin/manage_role_user');
+        $config['total_rows'] = $this->admin_m->count_all_users_with_roles(); // Total data user
+        $config['per_page'] = 10; // Jumlah data per halaman
+        $config['uri_segment'] = 3; // Segment URL untuk nomor halaman
+        $config['full_tag_open'] = '<ul class="pagination">';
+        $config['full_tag_close'] = '</ul>';
+        $config['first_link'] = 'Pertama';
+        $config['last_link'] = 'Terakhir';
+        $config['next_link'] = 'Selanjutnya';
+        $config['prev_link'] = 'Sebelumnya';
+        $config['first_tag_open'] = '<li class="page-item">';
+        $config['first_tag_close'] = '</li>';
+        $config['last_tag_open'] = '<li class="page-item">';
+        $config['last_tag_close'] = '</li>';
+        $config['next_tag_open'] = '<li class="page-item">';
+        $config['next_tag_close'] = '</li>';
+        $config['prev_tag_open'] = '<li class="page-item">';
+        $config['prev_tag_close'] = '</li>';
+        $config['cur_tag_open'] = '<li class="page-item active"><a class="page-link" href="#">';
+        $config['cur_tag_close'] = '</a></li>';
+        $config['num_tag_open'] = '<li class="page-item">';
+        $config['num_tag_close'] = '</li>';
+        $config['attributes'] = array('class' => 'page-link');
 
-    $this->pagination->initialize($config);
-
-    $page = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0;
-
-    // Ambil data untuk pencarian
-    $search = $this->input->get('search');
-    if ($search) {
-        $data['users'] = $this->admin_m->search_users_with_roles($search, $config['per_page'], $page);
-        $config['total_rows'] = $this->admin_m->count_search_users_with_roles($search);
         $this->pagination->initialize($config);
-    } else {
-        $data['users'] = $this->admin_m->get_all_users_with_roles_paginated($config['per_page'], $page);
-    }
 
-    $data['pagination'] = $this->pagination->create_links();
-    $data['title'] = 'Kelola Role User';
-    $data['user_name'] = $this->session->userdata('name');
-    $data['roles'] = $this->admin_m->get_all_roles();
-    foreach ($data['users'] as &$user) {
-        $user['role_details'] = $this->admin_m->get_user_roles($user['id_user']);
+        $page = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0;
+
+        // Ambil data untuk pencarian
+        $search = $this->input->get('search');
+        if ($search) {
+            $data['users'] = $this->admin_m->search_users_with_roles($search, $config['per_page'], $page);
+            $config['total_rows'] = $this->admin_m->count_search_users_with_roles($search);
+            $this->pagination->initialize($config);
+        } else {
+            $data['users'] = $this->admin_m->get_all_users_with_roles_paginated($config['per_page'], $page);
+        }
+
+        $data['pagination'] = $this->pagination->create_links();
+        $data['title'] = 'Kelola Role User';
+        $data['user_name'] = $this->session->userdata('name');
+        $data['roles'] = $this->admin_m->get_all_roles();
+        foreach ($data['users'] as &$user) {
+            $user['role_details'] = $this->admin_m->get_user_roles($user['id_user']);
+        }
+        $data['search'] = $search;
+        $data['content_view'] = 'admin/manage_role_user';
+        $this->load->view('template/header', $data);
+        $this->load->view('template/sidebar', $data);
+        $this->load->view('template/footer', $data);
     }
-    $data['search'] = $search;
-    $data['content_view'] = 'admin/manage_role_user';
-    $this->load->view('template/header', $data);
-    $this->load->view('template/sidebar', $data);
-    $this->load->view('template/footer', $data);
-}
 
     public function assign_role($user_id) {
         $data = [];
@@ -322,57 +322,57 @@ class Admin extends CI_Controller {
     }
 
     public function manage_klasifikasi_surat() {
-    $data = [];
-    $data['title'] = 'Kelola Klasifikasi Surat';
-    $data['user_name'] = $this->session->userdata('name');
+        $data = [];
+        $data['title'] = 'Kelola Klasifikasi Surat';
+        $data['user_name'] = $this->session->userdata('name');
 
-    // Load library pagination
-    $this->load->library('pagination');
+        // Load library pagination
+        $this->load->library('pagination');
 
-    // Konfigurasi pagination
-    $config['base_url'] = site_url('admin/manage_klasifikasi_surat');
-    $config['total_rows'] = $this->admin_m->count_klasifikasi_surat(); // Total data tanpa filter
-    $config['per_page'] = 10; // Jumlah data per halaman
-    $config['uri_segment'] = 3; // Segment URI untuk offset
-    $config['full_tag_open'] = '<ul class="pagination">';
-    $config['full_tag_close'] = '</ul>';
-    $config['first_link'] = 'Pertama';
-    $config['last_link'] = 'Terakhir';
-    $config['next_link'] = 'Selanjutnya';
-    $config['prev_link'] = 'Sebelumnya';
-    $config['first_tag_open'] = '<li class="page-item">';
-    $config['first_tag_close'] = '</li>';
-    $config['last_tag_open'] = '<li class="page-item">';
-    $config['last_tag_close'] = '</li>';
-    $config['next_tag_open'] = '<li class="page-item">';
-    $config['next_tag_close'] = '</li>';
-    $config['prev_tag_open'] = '<li class="page-item">';
-    $config['prev_tag_close'] = '</li>';
-    $config['cur_tag_open'] = '<li class="page-item active"><a class="page-link" href="#">';
-    $config['cur_tag_close'] = '</a></li>';
-    $config['num_tag_open'] = '<li class="page-item">';
-    $config['num_tag_close'] = '</li>';
-    $config['attributes'] = array('class' => 'page-link');
+        // Konfigurasi pagination
+        $config['base_url'] = site_url('admin/manage_klasifikasi_surat');
+        $config['total_rows'] = $this->admin_m->count_klasifikasi_surat(); // Total data tanpa filter
+        $config['per_page'] = 10; // Jumlah data per halaman
+        $config['uri_segment'] = 3; // Segment URI untuk offset
+        $config['full_tag_open'] = '<ul class="pagination">';
+        $config['full_tag_close'] = '</ul>';
+        $config['first_link'] = 'Pertama';
+        $config['last_link'] = 'Terakhir';
+        $config['next_link'] = 'Selanjutnya';
+        $config['prev_link'] = 'Sebelumnya';
+        $config['first_tag_open'] = '<li class="page-item">';
+        $config['first_tag_close'] = '</li>';
+        $config['last_tag_open'] = '<li class="page-item">';
+        $config['last_tag_close'] = '</li>';
+        $config['next_tag_open'] = '<li class="page-item">';
+        $config['next_tag_close'] = '</li>';
+        $config['prev_tag_open'] = '<li class="page-item">';
+        $config['prev_tag_close'] = '</li>';
+        $config['cur_tag_open'] = '<li class="page-item active"><a class="page-link" href="#">';
+        $config['cur_tag_close'] = '</a></li>';
+        $config['num_tag_open'] = '<li class="page-item">';
+        $config['num_tag_close'] = '</li>';
+        $config['attributes'] = array('class' => 'page-link');
 
-    $this->pagination->initialize($config);
+        $this->pagination->initialize($config);
 
-    // Ambil offset untuk pagination
-    $offset = $this->uri->segment(3) ? $this->uri->segment(3) : 0;
+        // Ambil offset untuk pagination
+        $offset = $this->uri->segment(3) ? $this->uri->segment(3) : 0;
 
-    // Ambil parameter pencarian
-    $search = $this->input->get('search');
+        // Ambil parameter pencarian
+        $search = $this->input->get('search');
 
-    // Simpan search ke data untuk digunakan di view
-    $data['search'] = $search;
+        // Simpan search ke data untuk digunakan di view
+        $data['search'] = $search;
 
-    // Ambil data klasifikasi surat dengan limit, offset, dan filter pencarian
-    $data['klasifikasi_surat'] = $this->admin_m->get_klasifikasi_surat($config['per_page'], $offset, $search);
+        // Ambil data klasifikasi surat dengan limit, offset, dan filter pencarian
+        $data['klasifikasi_surat'] = $this->admin_m->get_klasifikasi_surat($config['per_page'], $offset, $search);
 
-    $data['content_view'] = 'admin/manage_klasifikasi_surat';
-    $this->load->view('template/header', $data);
-    $this->load->view('template/sidebar', $data);
-    $this->load->view('template/footer', $data);
-}
+        $data['content_view'] = 'admin/manage_klasifikasi_surat';
+        $this->load->view('template/header', $data);
+        $this->load->view('template/sidebar', $data);
+        $this->load->view('template/footer', $data);
+    }
 
     public function add_klasifikasi_surat() {
         $data = [];
@@ -424,10 +424,51 @@ class Admin extends CI_Controller {
     }
 
     public function add_role() {
-        $data = [];
+        $this->load->library('pagination');
+
+        // Konfigurasi pagination
+        $config['base_url'] = site_url('admin/add_role');
+        $config['total_rows'] = $this->admin_m->count_all_roles(); // Total data role
+        $config['per_page'] = 10; // Jumlah data per halaman
+        $config['uri_segment'] = 3; // Segment URL untuk nomor halaman
+        $config['full_tag_open'] = '<ul class="pagination">';
+        $config['full_tag_close'] = '</ul>';
+        $config['first_link'] = 'Pertama';
+        $config['last_link'] = 'Terakhir';
+        $config['next_link'] = 'Selanjutnya';
+        $config['prev_link'] = 'Sebelumnya';
+        $config['first_tag_open'] = '<li class="page-item">';
+        $config['first_tag_close'] = '</li>';
+        $config['last_tag_open'] = '<li class="page-item">';
+        $config['last_tag_close'] = '</li>';
+        $config['next_tag_open'] = '<li class="page-item">';
+        $config['next_tag_close'] = '</li>';
+        $config['prev_tag_open'] = '<li class="page-item">';
+        $config['prev_tag_close'] = '</li>';
+        $config['cur_tag_open'] = '<li class="page-item active"><a class="page-link" href="#">';
+        $config['cur_tag_close'] = '</a></li>';
+        $config['num_tag_open'] = '<li class="page-item">';
+        $config['num_tag_close'] = '</li>';
+        $config['attributes'] = array('class' => 'page-link');
+
+        $this->pagination->initialize($config);
+
+        $page = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0;
+
+        // Ambil data untuk pencarian
+        $search = $this->input->get('search');
+        if ($search) {
+            $data['roles'] = $this->admin_m->search_roles($search, $config['per_page'], $page);
+            $config['total_rows'] = $this->admin_m->count_search_roles($search);
+            $this->pagination->initialize($config);
+        } else {
+            $data['roles'] = $this->admin_m->get_all_roles_paginated($config['per_page'], $page);
+        }
+
+        $data['pagination'] = $this->pagination->create_links();
         $data['title'] = 'Tambah Role Baru';
         $data['user_name'] = $this->session->userdata('name');
-        $data['roles'] = $this->admin_m->get_all_roles();
+        $data['search'] = $search;
 
         if ($this->input->post()) {
             $role_name = $this->input->post('nama_role');
