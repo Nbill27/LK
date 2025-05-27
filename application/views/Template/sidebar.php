@@ -40,7 +40,7 @@
                           </a>';
                     echo '<a class="nav-link ' . ($this->uri->segment(2) == 'manage_role_user' ? 'active' : '') . '" href="' . site_url('admin/manage_role_user') . '">
                             <div class="sb-nav-link-icon"><i class="fas fa-user-tag"></i></div>
-                            Kelola Role User
+                            Kelola Peran Pengguna
                           </a>';
                     echo '<a class="nav-link ' . ($this->uri->segment(2) == 'manage_user' ? 'active' : '') . '" href="' . site_url('admin/manage_user') . '">
                             <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
@@ -48,11 +48,11 @@
                           </a>';
                     echo '<a class="nav-link ' . ($this->uri->segment(2) == 'add_role' ? 'active' : '') . '" href="' . site_url('admin/add_role') . '">
                             <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
-                            Tambah Role
+                            Tambah Peran
                           </a>';
                     echo '<a class="nav-link ' . ($this->uri->segment(2) == 'manage_klasifikasi_surat' ? 'active' : '') . '" href="' . site_url('admin/manage_klasifikasi_surat') . '">
                             <div class="sb-nav-link-icon"><i class="fas fa-envelope"></i></div>
-                            Kelola Klasifikasi Surat
+                            Kelola Klasifikasi Pengajuan
                           </a>';
                 } else {
                     echo '<a class="nav-link ' . ($this->uri->segment(1) == 'user' && $this->uri->segment(2) == 'dashboard' ? 'active' : '') . '" href="' . site_url('user/dashboard') . '">

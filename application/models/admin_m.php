@@ -467,36 +467,4 @@ class Admin_m extends CI_Model {
 
         return $results;
     }
-
-    // Method untuk menghitung total role
-    public function count_all_roles() {
-        $this->db->from('role');
-        return $this->db->count_all_results();
-    }
-
-    // Method untuk mengambil role dengan pagination
-    public function get_all_roles_paginated($limit, $offset) {
-        $this->db->select('*');
-        $this->db->from('role');
-        $this->db->limit($limit, $offset);
-        $query = $this->db->get();
-        return $query->result_array();
-    }
-
-    // Method untuk menghitung total role dengan filter pencarian
-    public function count_search_roles($search) {
-        $this->db->like('nama_role', $search);
-        $this->db->from('role');
-        return $this->db->count_all_results();
-    }
-
-    // Method untuk mencari role dengan pagination
-    public function search_roles($search, $limit, $offset) {
-        $this->db->select('*');
-        $this->db->from('role');
-        $this->db->like('nama_role', $search);
-        $this->db->limit($limit, $offset);
-        $query = $this->db->get();
-        return $query->result_array();
-    }
 }
