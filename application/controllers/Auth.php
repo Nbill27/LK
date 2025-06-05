@@ -58,7 +58,7 @@ class Auth extends CI_Controller {
                 }
             } else {
                 $this->session->set_flashdata('error', 'Username tidak ditemukan!');
-                redirect('auth/login');
+                    redirect('auth/login');
             }
         } else {
             $this->load->view('auth/login');
@@ -70,36 +70,39 @@ class Auth extends CI_Controller {
             redirect('auth/login');
         }
 
-        $role = $this->input->post('role');
-        if ($role) {
-            $user_id = $this->session->userdata('id_user');
-            $roles = $this->admin_m->get_user_roles($user_id);
-            $role_exists = false;
-            foreach ($roles as $r) {
-                if ($r['nama_role'] == $role) {
-                    $role_exists = true;
-                    break;
+        // Hanya proses jika ada POST request
+        if ($this->input->method() === 'post') {
+            $role = $this->input->post('role');
+            if ($role) {
+                $user_id = $this->session->userdata('id_user');
+                $roles = $this->admin_m->get_user_roles($user_id);
+                $role_exists = false;
+                foreach ($roles as $r) {
+                    if ($r['nama_role'] == $role) {
+                        $role_exists = true;
+                        break;
+                    }
                 }
-            }
 
-            if ($role_exists) {
-                $this->session->set_userdata('active_role', $role);
-                if ($role == 'admin') {
-                    redirect('admin');
+                if ($role_exists) {
+                    $this->session->set_userdata('active_role', $role);
+                    if ($role == 'admin') {
+                        redirect('admin');
+                    } else {
+                        redirect('user/dashboard');
+                    }
                 } else {
-                    redirect('user/dashboard');
+                    $this->session->set_flashdata('error', 'Role tidak valid untuk user ini!');
                 }
             } else {
-                $this->session->set_flashdata('error', 'Role tidak valid untuk user ini!');
-                $data['roles'] = $roles;
-                $this->load->view('auth/choose_role', $data);
+                $this->session->set_flashdata('error', 'Silakan pilih role terlebih dahulu!');
             }
-        } else {
-            $this->session->set_flashdata('error', 'Silakan pilih role terlebih dahulu!');
-            $user_id = $this->session->userdata('id_user');
-            $data['roles'] = $this->admin_m->get_user_roles($user_id);
-            $this->load->view('auth/choose_role', $data);
         }
+
+        // Jika bukan POST request, muat ulang halaman choose_role
+        $user_id = $this->session->userdata('id_user');
+        $data['roles'] = $this->admin_m->get_user_roles($user_id);
+        $this->load->view('auth/choose_role', $data);
     }
 
     public function logout() {
